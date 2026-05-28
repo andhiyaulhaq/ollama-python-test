@@ -1,15 +1,80 @@
-import './style.css';
 import { marked } from 'marked';
 
+// Chat Elements
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
 const chatBox = document.getElementById('chatBox');
 const themeToggle = document.getElementById('themeToggle');
+const logoutBtn = document.getElementById('logoutBtn');
 const sendBtn = document.getElementById('sendBtn');
 
-let chatHistory = [];
+// Login Elements
+const loginOverlay = document.getElementById('loginOverlay');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
 
-// Theme Toggle
+let chatHistory = [];
+let authToken = localStorage.getItem('chat_token');
+
+// --- Authentication Logic ---
+function checkAuth() {
+    if (authToken) {
+        loginOverlay.classList.add('hidden');
+    } else {
+        loginOverlay.classList.remove('hidden');
+    }
+}
+
+function handleAuthError() {
+    authToken = null;
+    localStorage.removeItem('chat_token');
+    checkAuth();
+}
+
+logoutBtn.addEventListener('click', () => {
+    handleAuthError();
+});
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const usernameInput = document.getElementById('username').value.trim();
+    const passwordInput = document.getElementById('password').value;
+    
+    loginError.classList.add('hidden');
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: usernameInput,
+                password: passwordInput
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Invalid credentials');
+        }
+        
+        const data = await response.json();
+        authToken = data.access_token;
+        localStorage.setItem('chat_token', authToken);
+        
+        // Reset form and hide overlay
+        loginForm.reset();
+        checkAuth();
+        
+    } catch (error) {
+        loginError.classList.remove('hidden');
+    }
+});
+
+// Run initial check
+checkAuth();
+
+// --- Theme Toggle ---
 themeToggle.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -30,6 +95,7 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
     themeToggle.querySelector('i').classList.replace('fa-moon', 'fa-sun');
 }
 
+// --- Chat Logic ---
 function appendMessage(role, content) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', role === 'user' ? 'user-message' : 'ai-message');
@@ -99,12 +165,18 @@ chatForm.addEventListener('submit', async (e) => {
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
             },
             body: JSON.stringify({ messages: chatHistory })
         });
         
         removeTypingIndicator();
+        
+        if (response.status === 401) {
+            handleAuthError();
+            throw new Error('Unauthorized. Please log in again.');
+        }
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

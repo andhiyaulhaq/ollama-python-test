@@ -10,8 +10,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main CSS (linked here to prevent Flash of Unstyled Content) -->
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fa-solid fa-lock"></i>
+                <h2>Access Required</h2>
+                <p>Please log in to continue</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <div id="loginError" class="login-error hidden">Invalid username or password</div>
+                <button type="submit" class="login-btn">Log In</button>
+            </form>
+        </div>
+    </div>
+
     <div class="chat-container">
         <header class="chat-header">
             <div class="header-info">
@@ -23,9 +48,14 @@
                     <span class="status"><span class="status-dot"></span>Online - Qwen 2.5</span>
                 </div>
             </div>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-                <i class="fa-solid fa-moon"></i>
-            </button>
+            <div class="header-actions">
+                <button class="theme-toggle" id="logoutBtn" aria-label="Log out" title="Log out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
         </header>
         
         <main class="chat-messages" id="chatBox">
