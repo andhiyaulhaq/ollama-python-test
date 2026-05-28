@@ -5,7 +5,10 @@ from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 import ollama
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -18,9 +21,9 @@ app.add_middleware(
 )
 
 # --- Authentication Configuration ---
-USERNAME = "admin"
-PASSWORD = "password123"
-FAKE_TOKEN = "secret-token-12345"
+USERNAME = os.getenv("API_USERNAME", "admin")
+PASSWORD = os.getenv("API_PASSWORD", "password123")
+FAKE_TOKEN = os.getenv("API_SECRET_TOKEN", "secret-token-12345")
 
 security = HTTPBearer()
 

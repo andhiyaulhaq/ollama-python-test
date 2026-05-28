@@ -1,5 +1,7 @@
 import { marked } from 'marked';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 // Chat Elements
 const chatForm = document.getElementById('chatForm');
 const userInput = document.getElementById('userInput');
@@ -78,7 +80,7 @@ loginForm.addEventListener('submit', async (e) => {
     loginError.classList.add('hidden');
     
     try {
-        const response = await fetch('/api/login', {
+        const response = await fetch(`${API_BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -206,7 +208,7 @@ chatForm.addEventListener('submit', async (e) => {
     sendBtn.disabled = true;
     
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch(`${API_BASE_URL}/api/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
