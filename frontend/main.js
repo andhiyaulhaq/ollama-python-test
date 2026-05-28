@@ -22,13 +22,24 @@ async function typeWelcomeMessage() {
         const welcomeText = "Hello! I am your AI assistant powered by Qwen 2.5. How can I help you today?";
         const aiMessageDiv = document.createElement('div');
         aiMessageDiv.classList.add('message', 'ai-message');
+        
         const contentDiv = document.createElement('div');
         contentDiv.classList.add('message-content');
+        
+        const textWrapper = document.createElement('div');
+        textWrapper.classList.add('text-wrapper');
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.classList.add('message-time');
+        timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        contentDiv.appendChild(textWrapper);
+        contentDiv.appendChild(timeDiv);
         aiMessageDiv.appendChild(contentDiv);
         chatBox.appendChild(aiMessageDiv);
         
         for (let i = 0; i < welcomeText.length; i++) {
-            contentDiv.innerHTML += welcomeText.charAt(i);
+            textWrapper.innerHTML += welcomeText.charAt(i);
             chatBox.scrollTop = chatBox.scrollHeight;
             await new Promise(resolve => setTimeout(resolve, 10)); // Sped up from 30ms to 10ms
         }
@@ -124,17 +135,26 @@ function appendMessage(role, content) {
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
     
+    const textWrapper = document.createElement('div');
+    textWrapper.classList.add('text-wrapper');
+    
+    const timeDiv = document.createElement('div');
+    timeDiv.classList.add('message-time');
+    timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
     if (role === 'ai') {
-        contentDiv.innerHTML = marked.parse(content);
+        textWrapper.innerHTML = marked.parse(content);
     } else {
-        contentDiv.textContent = content;
+        textWrapper.textContent = content;
     }
     
+    contentDiv.appendChild(textWrapper);
+    contentDiv.appendChild(timeDiv);
     messageDiv.appendChild(contentDiv);
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
     
-    return contentDiv;
+    return textWrapper;
 }
 
 function appendTypingIndicator() {
@@ -206,8 +226,19 @@ chatForm.addEventListener('submit', async (e) => {
         // Create an empty AI message to stream into
         const aiMessageDiv = document.createElement('div');
         aiMessageDiv.classList.add('message', 'ai-message');
+        
         const contentDiv = document.createElement('div');
         contentDiv.classList.add('message-content');
+        
+        const textWrapper = document.createElement('div');
+        textWrapper.classList.add('text-wrapper');
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.classList.add('message-time');
+        timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        contentDiv.appendChild(textWrapper);
+        contentDiv.appendChild(timeDiv);
         aiMessageDiv.appendChild(contentDiv);
         chatBox.appendChild(aiMessageDiv);
         
@@ -223,7 +254,7 @@ chatForm.addEventListener('submit', async (e) => {
             aiFullResponse += chunk;
             
             // Parse with marked and update content
-            contentDiv.innerHTML = marked.parse(aiFullResponse);
+            textWrapper.innerHTML = marked.parse(aiFullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
         
