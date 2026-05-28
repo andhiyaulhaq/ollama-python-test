@@ -17,11 +17,32 @@ let chatHistory = [];
 let authToken = localStorage.getItem('chat_token');
 
 // --- Authentication Logic ---
+async function typeWelcomeMessage() {
+    if (chatBox.children.length === 0) {
+        const welcomeText = "Hello! I am your AI assistant powered by Qwen 2.5. How can I help you today?";
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.classList.add('message', 'ai-message');
+        const contentDiv = document.createElement('div');
+        contentDiv.classList.add('message-content');
+        aiMessageDiv.appendChild(contentDiv);
+        chatBox.appendChild(aiMessageDiv);
+        
+        for (let i = 0; i < welcomeText.length; i++) {
+            contentDiv.innerHTML += welcomeText.charAt(i);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, 10)); // Sped up from 30ms to 10ms
+        }
+    }
+}
+
 function checkAuth() {
     if (authToken) {
         loginOverlay.classList.add('hidden');
+        userInput.focus();
+        typeWelcomeMessage();
     } else {
         loginOverlay.classList.remove('hidden');
+        document.getElementById('username').focus();
     }
 }
 
