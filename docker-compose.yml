@@ -1,0 +1,13 @@
+services:
+  chat-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # This points to the host machine's Ollama instance.
+      # Ensure Ollama is configured to listen on 0.0.0.0 on the host!
+      - OLLAMA_HOST=http://host.docker.internal:11434
