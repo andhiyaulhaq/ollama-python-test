@@ -34,7 +34,6 @@ async function typeWelcomeMessage() {
         timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         contentDiv.appendChild(textWrapper);
-        contentDiv.appendChild(timeDiv);
         aiMessageDiv.appendChild(contentDiv);
         chatBox.appendChild(aiMessageDiv);
         
@@ -43,6 +42,10 @@ async function typeWelcomeMessage() {
             chatBox.scrollTop = chatBox.scrollHeight;
             await new Promise(resolve => setTimeout(resolve, 10)); // Sped up from 30ms to 10ms
         }
+        
+        // Append time only after typing is finished
+        contentDiv.appendChild(timeDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 }
 
@@ -238,7 +241,6 @@ chatForm.addEventListener('submit', async (e) => {
         timeDiv.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         contentDiv.appendChild(textWrapper);
-        contentDiv.appendChild(timeDiv);
         aiMessageDiv.appendChild(contentDiv);
         chatBox.appendChild(aiMessageDiv);
         
@@ -257,6 +259,10 @@ chatForm.addEventListener('submit', async (e) => {
             textWrapper.innerHTML = marked.parse(aiFullResponse);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+        
+        // Append time only after streaming is finished
+        contentDiv.appendChild(timeDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
         
         chatHistory.push({ role: 'assistant', content: aiFullResponse });
         
