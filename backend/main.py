@@ -4,9 +4,18 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.middleware.cors import CORSMiddleware
 import ollama
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # --- Authentication Configuration ---
 USERNAME = "admin"
@@ -62,13 +71,16 @@ async def chat(request: ChatRequest, token: str = Depends(verify_token)):
     return StreamingResponse(generate(), media_type="text/plain")
 
 # --- Static File Serving ---
-# Get the directory of the current file (backend)
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# Get the parent directory (project root)
-root_dir = os.path.dirname(current_dir)
-frontend_dir = os.path.join(root_dir, "frontend")
+API_ONLY = os.getenv("API_ONLY", "false").lower() == "true"
 
-# Ensure the frontend directory exists so FastAPI doesn't crash on startup if it's missing
-os.makedirs(frontend_dir, exist_ok=True)
+if not API_ONLY:
+    # Get the directory of the current file (backend)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Get the parent directory (project root)
+    root_dir = os.path.dirname(current_dir)
+    frontend_dir = os.path.join(root_dir, "frontend")
 
-app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+    # Ensure the frontend directory exists so FastAPI doesn't crash on startup if it's missing
+    os.makedirs(frontend_dir, exist_ok=True)
+
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")

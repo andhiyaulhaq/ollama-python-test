@@ -1,0 +1,16 @@
+services:
+  chat-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - API_ONLY=true
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    external: true
